@@ -3,106 +3,111 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NPA Image Generator | 3IReborn</title>
+  <title>NPA Image Lab | 3IReborn Smart Caption FB-Pro</title>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background: #0e0e0e;
+      background: linear-gradient(135deg, #0b0c10, #1b1c22);
       color: #f3f3f3;
       text-align: center;
       padding: 20px;
     }
     h1 {
-      color: #00e0b8;
       font-size: 1.8em;
-      margin-bottom: 10px;
+      color: #00ffc6;
+    }
+    p {
+      color: #a9a9a9;
     }
     .container {
-      max-width: 480px;
-      margin: auto;
-      background: #1a1a1a;
+      background: #111319;
+      border-radius: 18px;
+      box-shadow: 0 0 15px rgba(0, 255, 198, 0.2);
       padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 0 15px rgba(0, 224, 184, 0.4);
+      max-width: 480px;
+      margin: 25px auto;
     }
-    select, textarea, button {
+    textarea, select, button {
       width: 100%;
-      margin-top: 10px;
+      margin: 8px 0;
       padding: 10px;
-      border-radius: 8px;
       border: none;
+      border-radius: 8px;
       font-size: 1em;
     }
     textarea {
-      resize: vertical;
-      height: 100px;
-      background: #222;
+      background: #1a1a1a;
       color: #eee;
+      resize: vertical;
     }
     select {
-      background: #222;
+      background: #1a1a1a;
       color: #eee;
     }
     button {
-      background: #00e0b8;
+      background: #00ffc6;
       color: #000;
-      font-weight: bold;
-      cursor: pointer;
+      font-weight: 600;
       transition: 0.3s;
+      cursor: pointer;
     }
     button:hover {
-      background: #00c4a3;
+      background: #00d9a3;
     }
     img {
       width: 100%;
-      border-radius: 10px;
+      border-radius: 12px;
       margin-top: 15px;
     }
     .caption {
-      background: #111;
+      background: #141414;
+      border-left: 4px solid #00ffc6;
       padding: 12px;
-      border-radius: 8px;
       margin-top: 10px;
-      font-size: 0.95em;
       text-align: left;
+      border-radius: 8px;
+      font-size: 0.9em;
+    }
+    #loading {
+      margin-top: 12px;
+      color: #aaa;
+      font-style: italic;
     }
   </style>
 </head>
 <body>
 
-  <h1>🧠 NPA Image Generator</h1>
-  <p style="color:#aaa;">by 3IReborn Smart System</p>
+  <h1>🧠 NPA Image Lab</h1>
+  <p>3IReborn Smart Caption FB-Pro Mode — Inspirasi & Syariah</p>
 
   <div class="container">
-    <textarea id="prompt" placeholder="Tuliskan ide gambar kamu..."></textarea>
-    
-    <label for="style">🎨 Gaya Visual</label>
+    <textarea id="prompt" placeholder="Tuliskan ide atau tema gambarnya..."></textarea>
+
+    <label>🎨 Gaya Visual</label>
     <select id="style">
-      <option>Realistic</option>
+      <option>Clean Islamic</option>
+      <option>Elegant Minimalist</option>
+      <option>Warm Natural Light</option>
       <option>Digital Art</option>
-      <option>3D Render</option>
-      <option>Cartoon</option>
-      <option>Minimalist</option>
     </select>
 
-    <label for="ratio">🖼️ Rasio Gambar</label>
+    <label>🖼️ Rasio Gambar</label>
     <select id="ratio">
       <option>1:1</option>
+      <option>4:5</option>
       <option>9:16</option>
-      <option>16:9</option>
     </select>
 
-    <label for="captionTone">🗣️ Gaya Caption</label>
+    <label>📢 Gaya Caption</label>
     <select id="captionTone">
-      <option>Motivasi</option>
-      <option>Inspirasi Bisnis</option>
-      <option>Syariah</option>
-      <option>Santai</option>
+      <option selected>Inspirasi & Syariah</option>
+      <option>Motivasi Lembut</option>
+      <option>Renungan Hidup</option>
+      <option>Doa & Harapan</option>
     </select>
 
     <button onclick="generateImage()">🚀 Generate Gambar</button>
-
-    <div id="loading" style="display:none;margin-top:10px;">⏳ Sedang membuat gambar...</div>
+    <div id="loading" style="display:none;">⏳ Sedang membuat gambar dan caption...</div>
 
     <img id="result-image" style="display:none;" />
     <div id="caption" class="caption" style="display:none;"></div>
@@ -118,7 +123,7 @@
       const captionTone = document.getElementById("captionTone").value;
 
       if (!prompt) {
-        alert("Isi dulu ide gambarnya beb 😄");
+        alert("Isi dulu idenya beb 😄");
         return;
       }
 
@@ -134,13 +139,18 @@
         });
 
         const data = await res.json();
-
         document.getElementById("loading").style.display = "none";
 
         if (data.ok) {
           document.getElementById("result-image").src = data.image;
           document.getElementById("result-image").style.display = "block";
-          document.getElementById("caption").innerText = data.caption;
+
+          // Smart Caption 3IReborn Mode
+          const smartCaption = `🌿 *${data.caption || "Setiap karya adalah bentuk syukur."}*\n\n` +
+            `💬 Refleksi: ${prompt}\n\n` +
+            `✨ #3IReborn #NPA #SmartSystem #Syariah #InspirasiHidup`;
+          
+          document.getElementById("caption").innerText = smartCaption;
           document.getElementById("caption").style.display = "block";
         } else {
           alert("❌ Gagal generate: " + data.error);
@@ -153,4 +163,4 @@
   </script>
 
 </body>
-</html>
+  </html>
