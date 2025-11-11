@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NPA Image Lab | 3IReborn Pro Creator Panel</title>
+  <title>NPA Image Lab | 3IReborn Smart Generator</title>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #050608, #101218);
+      background: radial-gradient(circle at top, #0b0c10, #101218);
       color: #f3f3f3;
       text-align: center;
       padding: 20px;
@@ -30,7 +30,7 @@
       max-width: 500px;
       margin: 20px auto;
     }
-    textarea, select, input[type="file"], button {
+    select, input[type="file"], textarea, button {
       width: 100%;
       margin: 8px 0;
       padding: 10px;
@@ -38,13 +38,9 @@
       border-radius: 10px;
       font-size: 1em;
     }
-    textarea, select {
+    select, textarea, input[type="file"] {
       background: #1a1a1a;
       color: #eee;
-    }
-    input[type="file"] {
-      background: #20232b;
-      color: #aaa;
     }
     button {
       font-weight: 600;
@@ -78,25 +74,46 @@
 <body>
 
   <h1>🧠 NPA Image Lab</h1>
-  <h2>3IReborn Smart Caption FB-Pro Mode — Inspirasi & Syariah</h2>
+  <h2>3IReborn Auto Prompt System — 31 Tema Siap Pakai</h2>
 
   <div class="container">
-    <label>🧩 Tema Karya</label>
-    <select id="theme">
-      <option>3IReborn</option>
-      <option>NPA Smart</option>
-      <option>Nganggur Aja</option>
-      <option>Bisnis Syariah</option>
-      <option>Motivasi Hidup</option>
-      <option>Keluarga Islami</option>
-      <option>Doa & Harapan</option>
-      <option>Inspirasi Finansial</option>
-      <option>Spiritual Journey</option>
-      <option>Gaya Hidup Sehat</option>
-      <option>✨ Custom Tema Sendiri</option>
+    <label>🌈 Pilih Ide Gambar (Auto Prompt)</label>
+    <select id="promptSelect" onchange="handlePromptSelect()">
+      <option value="">-- Pilih Tema --</option>
+      <option>3IReborn Spirit</option>
+      <option>NPA Smart System</option>
+      <option>Semangat Pagi Rezeki</option>
+      <option>Syukur Kecil Bahagia Besar</option>
+      <option>Bisnis Syariah Modern</option>
+      <option>Kolaborasi Rezeki</option>
+      <option>Keluarga Bahagia Dunia Akhirat</option>
+      <option>Perjalanan Spiritual</option>
+      <option>Motivasi Finansial</option>
+      <option>Bangun Mindset Positif</option>
+      <option>Jangan Takut Gagal</option>
+      <option>Istikamah Dalam Proses</option>
+      <option>Doa di Pagi Hari</option>
+      <option>Langkah Pertama Menuju Sukses</option>
+      <option>Leader Visioner</option>
+      <option>Kesabaran Dalam Usaha</option>
+      <option>Rezeki Halal Berkah</option>
+      <option>Hijrah Finansial</option>
+      <option>Teamwork is Barokah</option>
+      <option>Networking for Ummah</option>
+      <option>Konsistensi = Hasil</option>
+      <option>Bangun dari Nol</option>
+      <option>Belajar dari Kegagalan</option>
+      <option>Waktu adalah Amanah</option>
+      <option>Berbagi Tanpa Pamrih</option>
+      <option>Vision 3IReborn 2030</option>
+      <option>Self Growth</option>
+      <option>Berpikir Kaya, Hidup Barokah</option>
+      <option>Optimasi Diri & Doa</option>
+      <option>Leadership & Inspirasi</option>
+      <option value="custom">✏️ Tulis Ide Sendiri</option>
     </select>
 
-    <textarea id="prompt" placeholder="Tuliskan ide atau tema gambarnya..."></textarea>
+    <textarea id="customPrompt" style="display:none;" placeholder="Tulis ide kamu di sini..."></textarea>
 
     <label>🎨 Gaya Visual</label>
     <select id="style">
@@ -124,9 +141,6 @@
       <option>Leadership</option>
     </select>
 
-    <label>📁 Upload Gambar (opsional)</label>
-    <input type="file" id="imageUpload" accept="image/*">
-
     <button class="btn-main" onclick="generateImage()">🚀 Generate Gambar</button>
     <div id="loading" style="display:none;">⏳ Sedang membuat gambar dan caption...</div>
 
@@ -144,12 +158,19 @@
     let currentImage = "";
     let currentCaption = "";
 
+    function handlePromptSelect() {
+      const selected = document.getElementById("promptSelect").value;
+      const customBox = document.getElementById("customPrompt");
+      customBox.style.display = selected === "custom" ? "block" : "none";
+    }
+
     async function generateImage() {
-      const prompt = document.getElementById("prompt").value.trim();
+      let prompt = document.getElementById("promptSelect").value;
+      if (prompt === "custom") prompt = document.getElementById("customPrompt").value.trim();
+
       const style = document.getElementById("style").value;
       const ratio = document.getElementById("ratio").value;
       const captionTone = document.getElementById("captionTone").value;
-      const theme = document.getElementById("theme").value;
 
       if (!prompt) return alert("Isi dulu idenya beb 😄");
 
@@ -161,15 +182,14 @@
         const res = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt, style, ratio, captionTone, theme })
+          body: JSON.stringify({ prompt, style, ratio, captionTone })
         });
-
         const data = await res.json();
         document.getElementById("loading").style.display = "none";
 
         if (data.ok) {
           currentImage = data.image;
-          currentCaption = `🌿 *${data.caption || "Setiap karya adalah bentuk syukur."}*\n\n🧩 Tema: ${theme}\n💬 ${prompt}\n\n✨ #3IReborn #NPA #SmartSystem #Syariah #InspirasiHidup`;
+          currentCaption = `🌿 *${data.caption || "Setiap karya adalah bentuk syukur."}*\n\n💡 Ide: ${prompt}\n✨ #3IReborn #NPA #SmartSystem #Syariah #Inspirasi`;
 
           document.getElementById("result-image").src = currentImage;
           document.getElementById("result-image").style.display = "block";
@@ -186,33 +206,24 @@
       navigator.clipboard.writeText(currentCaption || "Belum ada caption");
       alert("✅ Caption berhasil disalin!");
     }
-
     function refreshCaption() {
       alert("🔄 Caption baru akan otomatis dibuat saat generate ulang gambar!");
     }
-
     function sendToNPA() {
-      alert("📡 Integrasi NPA Smart aktif setelah backend full sync!");
+      alert("📡 Fitur integrasi aktif setelah backend sync!");
     }
-
     function downloadPost() {
-      if (!currentImage || !currentCaption) {
-        alert("⚠️ Belum ada hasil untuk diunduh!");
-        return;
-      }
-
+      if (!currentImage || !currentCaption) return alert("⚠️ Belum ada hasil untuk diunduh!");
       const linkImage = document.createElement("a");
       linkImage.href = currentImage;
       linkImage.download = "3IReborn_Image.jpg";
       linkImage.click();
-
       const captionBlob = new Blob([currentCaption], { type: "text/plain" });
       const captionUrl = URL.createObjectURL(captionBlob);
       const linkText = document.createElement("a");
       linkText.href = captionUrl;
       linkText.download = "3IReborn_Caption.txt";
       linkText.click();
-
       alert("✅ Gambar dan caption berhasil diunduh!");
     }
   </script>
