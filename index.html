@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>NPA Image Lab v2 — AI Image + Caption (FB Pro)</title>
+<meta name="description" content="Generator gambar AI + caption aman FB Pro untuk 3IReborn / NPA Smart / Nganggur Aja." />
+<link rel="preconnect" href="https://image.pollinations.ai">
+<style>
+  :root{
+    --bg:#f7fbff; --card:#ffffff; --text:#0b2a4a; --muted:#5f7895;
+    --brand:#2d6cdf; --brand-2:#6ba8ff; --ok:#12b886; --warn:#f08c00;
+    --soft:#e9f2ff; --ring:#cfe1ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial;color:var(--text);background:linear-gradient(180deg,var(--bg),#fff)}
+  .wrap{max-width:980px;margin:28px auto;padding:0 16px}
+  .hero{display:flex;gap:18px;align-items:center;margin-bottom:14px}
+  .badge{display:inline-block;background:var(--soft);color:var(--brand);border:1px solid var(--ring);padding:6px 10px;border-radius:999px;font-weight:600}
+  h1{margin:.3rem 0 0;font-size:28px;letter-spacing:.2px}
+  p.lead{margin:8px 0 18px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid #e9eef7;border-radius:14px;padding:16px;box-shadow:0 6px 18px rgba(45,108,223,.06)}
+  .card h3{margin:0 0 12px}
+  label{display:block;font-weight:700;margin:14px 0 6px}
+  select,textarea,input[type="text"]{
+    width:100%;padding:12px 12px;border-radius:10px;border:1px solid #d9e6ff;outline:none;
+    background:#fff;box-shadow:inset 0 1px 0 rgba(0,0,0,.02)
+  }
+  textarea{min-height:130px;resize:vertical}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:12px;padding:12px 16px;
+       font-weight:700;cursor:pointer}
+  .b-brand{background:var(--brand);color:#fff}
+  .b-ghost{background:#edf3ff;color:var(--brand)}
+  .b-ok{background:var(--ok);color:#fff}
+  .b-warn{background:var(--warn);color:#fff}
+  .muted{color:var(--muted)}
+  .preview{display:grid;gap:10px}
+  .imgbox{width:100%;aspect-ratio:1/1;background:#f2f6ff;border:1px dashed #cfe1ff;border-radius:12px;display:grid;place-items:center;overflow:hidden}
+  .imgbox img{max-width:100%;max-height:100%;display:block}
+  .hint{font-size:13px;color:var(--muted)}
+  .capbox{position:relative}
+  .capbox textarea{min-height:160px}
+  .cap-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .small{font-size:12px}
+  .list{padding-left:18px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <span class="badge">NPA Image Lab</span>
+      <h1>AI Image Generator + Caption Builder (FB Pro)</h1>
+    </div>
+    <p class="lead">Bikin gambar AI bertema <b>3IReborn / NPA Smart / Nganggur Aja</b> lalu dapatkan
+      <b>caption aman FB Pro</b> (tanpa link di caption, ajakan interaksi natural).</p>
+
+    <div class="grid">
+      <!-- LEFT: Controls -->
+      <section class="card">
+        <h3>🎛️ Pengaturan Karya</h3>
+        <div class="row">
+          <div>
+            <label for="tema">Tema</label>
+            <select id="tema">
+              <option>3IReborn</option>
+              <option>NPA Smart</option>
+              <option>Nganggur Aja</option>
+              <option>Promo Zoom</option>
+              <option>Bonus Leader</option>
+            </select>
+          </div>
+          <div>
+            <label for="style">Gaya Visual</label>
+            <select id="style">
+              <option value="clean corporate">Clean Corporate</option>
+              <option value="warm humanist">Warm Humanist</option>
+              <option value="dynamic social">Dynamic Social</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="ratio">Rasio</label>
+            <select id="ratio">
+              <option value="1:1">1:1 (Feed)</option>
+              <option value="4:5">4:5 (FB/IG)</option>
+              <option value="9:16">9:16 (Reels/Story)</option>
+            </select>
+          </div>
+          <div>
+            <label for="tone">Tone Caption</label>
+            <select id="tone">
+              <option value="inspiratif">✨ Inspiratif</option>
+              <option value="profesional">💼 Profesional</option>
+              <option value="closing">🔥 Closing-driven</option>
+            </select>
+          </div>
+        </div>
+
+        <label for="prompt">Prompt (boleh edit)</label>
+        <textarea id="prompt" placeholder="Tulis prompt untuk gambar AI..."></textarea>
+        <div class="cap-actions">
+          <button id="autoPrompt" class="btn b-ghost">🎯 Auto Prompt</button>
+          <button id="genImg" class="btn b-brand">🚀 Generate Gambar</button>
+        </div>
+        <p class="hint small">Gambar di-render via <b>Pollinations</b> (tanpa API key). Bila hasil kurang pas, klik <b>Generate</b> ulang atau perbaiki prompt.</p>
+      </section>
+
+      <!-- RIGHT: Preview + Caption -->
+      <section class="card preview">
+        <h3>🖼️ Preview Gambar</h3>
+        <div class="imgbox" id="imgbox">
+          <div class="muted small">Belum ada gambar. Klik <b>Generate Gambar</b>.</div>
+        </div>
+        <div id="imgActions" style="display:none;gap:10px;flex-wrap:wrap">
+          <button id="download" class="btn b-ok">⬇️ Download</button>
+          <button id="regen" class="btn b-ghost">🔁 Ulangi</button>
+        </div>
+
+        <h3 style="margin-top:10px">✍️ Caption FB-safe</h3>
+        <div class="capbox">
+          <textarea id="caption" placeholder="Caption akan dibuat otomatis..."></textarea>
+          <div class="cap-actions">
+            <button id="makeCap" class="btn b-ghost">✨ Buat Caption</button>
+            <button id="copyCap" class="btn b-brand">📋 Salin Caption</button>
+          </div>
+          <p class="hint small">Tips FB Pro: taruh <b>link</b> (kalau perlu) di <b>kolom komentar</b>, bukan di caption utama.</p>
+        </div>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top:16px">
+      <h3>💡 Saran Pakai</h3>
+      <ul class="list">
+        <li>Pilih tema & gaya, klik <b>Auto Prompt</b>, lalu <b>Generate Gambar</b>.</li>
+        <li>Setelah puas, klik <b>Buat Caption</b> → <b>Salin Caption</b> → unggah ke FB Pro.</li>
+        <li>Kalau perlu link (LP/daftar), tempel di komentar pertama, bukan di caption.</li>
+      </ul>
+    </section>
+  </div>
+
+<script>
+/* ==== Utilities ==== */
+const $ = sel => document.querySelector(sel);
+const temaEl = $('#tema'), styleEl = $('#style'), ratioEl = $('#ratio'),
+      toneEl = $('#tone'), promptEl = $('#prompt'),
+      autoPromptBtn = $('#autoPrompt'), genBtn = $('#genImg'),
+      imgbox = $('#imgbox'), imgActions = $('#imgActions'),
+      dlBtn = $('#download'), regenBtn = $('#regen'),
+      makeCapBtn = $('#makeCap'), copyCapBtn = $('#copyCap'), capEl = $('#caption');
+
+function ratioToSize(r){
+  // Pollinations supports width/height query. Keep under 1024 for speed.
+  switch(r){
+    case '4:5': return {w: 896, h: 1120};
+    case '9:16': return {w: 768, h: 1365};
+    default: return {w: 1024, h: 1024}; // 1:1
+  }
+}
+
+function autoPrompt(){
+  const tema = temaEl.value;
+  const style = styleEl.value;
+  const ratio = ratioEl.value;
+
+  const base = {
+    "3IReborn": "poster 3iReborn, perlindungan jiwa + investasi jangka panjang, suasana optimis profesional, ikon shield & growth, orang Indonesia tersenyum, tipografi modern tegas, warna biru navy + emas elegan",
+    "NPA Smart": "poster NPA Smart System, otomasi follow-up AI, dashboard modern, ilustrasi chat bot ramah, teamwork marketing, style product-led, warna biru lembut + putih",
+    "Nganggur Aja": "poster Nganggur Aja, gaya hidup produktif di rumah, kerja santai di laptop, nuansa friendly fun, elemen kalender dan income, warna biru muda + hijau",
+    "Promo Zoom": "poster jadwal Zoom malam 19:00 WIB, tombol join besar, countdown subtle, crowd siluet antusias, panggung webinar, warna biru elektrik + putih",
+    "Bonus Leader": "poster info bonus leader, grafik naik, perayaan tim, confetti subtle elegan, style profesional minimal, warna biru corporate + gold"
+  }[tema] || "poster profesional clean corporate";
+
+  const vibe = {
+    "clean corporate": "clean corporate, high clarity, balanced whitespace, premium composition",
+    "warm humanist": "warm humanist, candid human faces, soft natural lighting, approachable",
+    "dynamic social": "dynamic social, bold layout, punchy contrast, kinetic shapes"
+  }[style] || "clean corporate";
+
+  const size = ratioToSize(ratio);
+  const adders = `high detail, crisp vector-like edges, UHD, graphic design, trending on dribbble, Indonesian audience`;
+  const prompt = `${base}, ${vibe}. aspect ${ratio}. ${adders}`;
+  promptEl.value = prompt;
+}
+
+function buildImageUrl(prompt){
+  const size = ratioToSize(ratioEl.value);
+  const seed = Math.floor(Math.random()*1e9);
+  const u = new URL('https://image.pollinations.ai/prompt/'+encodeURIComponent(prompt));
+  u.searchParams.set('width', size.w);
+  u.searchParams.set('height', size.h);
+  u.searchParams.set('seed', seed);
+  // improve style
+  u.searchParams.set('model','flux'); // hint model
+  return u.toString();
+}
+
+let lastImageUrl = '';
+
+async function generateImage(){
+  const prompt = (promptEl.value || '').trim();
+  if(!prompt){ autoPrompt(); }
+  const finalPrompt = (promptEl.value || '').trim();
+  const url = buildImageUrl(finalPrompt);
+  lastImageUrl = url;
+
+  imgbox.innerHTML = '<div class="muted small">Membuat gambar…</div>';
+  const img = new Image();
+  img.loading = "eager";
+  img.referrerPolicy = "no-referrer";
+  img.onload = () => {
+    imgbox.innerHTML = '';
+    imgbox.appendChild(img);
+    imgActions.style.display = 'flex';
+  };
+  img.onerror = () => {
+    imgbox.innerHTML = '<div class="muted small">Gagal memuat. Coba ulangi.</div>';
+  };
+  img.src = url;
+}
+
+function makeCaption(){
+  const tema = temaEl.value;
+  const tone = toneEl.value;
+
+  const openers = {
+    inspiratif: [
+      "Kadang yang kita butuhkan cuma satu langkah berani untuk mulai.",
+      "Semua orang bisa mulai, yang penting dibimbing dan konsisten.",
+      "Masa depan disiapkan hari ini—pelan tapi pasti."
+    ],
+    profesional: [
+      "Ringkas, terukur, dan manusiawi—itu cara kami bekerja.",
+      "Sistem rapi, proses jelas, hasil bisa dipantau.",
+      "Kami fokus pada value yang berdampak nyata."
+    ],
+    closing: [
+      "Siapa yang mau ikut gaspol bareng?",
+      "Kalau kamu ngerasa relate, ini saatnya action.",
+      "Slot bimbingan dibuka terbatas—yang serius ayo maju."
+    ]
+  };
+
+  const points = {
+    "3IReborn":[
+      "Proteksi jiwa + tabungan investasi jangka panjang.",
+      "Modal fleksibel, bisa mulai dari Rp350.000/bulan.",
+      "Dibimbing step-by-step oleh leader berpengalaman."
+    ],
+    "NPA Smart":[
+      "Follow-up prospek otomatis (AI) + template konten harian.",
+      "Tersedia landing page & form pendaftaran siap pakai.",
+      "Integrasi broadcast via FonNTE (opsional)."
+    ],
+    "Nganggur Aja":[
+      "Belajar merapikan keuangan & bikin aset bertumbuh.",
+      "Cocok buat yang waktunya fleksibel dan suka online.",
+      "Bisa sambil kerja/kuliah/urus keluarga."
+    ],
+    "Promo Zoom":[
+      "Zoom rutin setiap 19:00 WIB (malam ini ada!).",
+      "Materi singkat, to the point, ada sesi tanya jawab.",
+      "Cocok untuk pemula maupun yang sudah jalan."
+    ],
+    "Bonus Leader":[
+      "Dashboard rapi untuk memantau progres & bonus.",
+      "Strategi rekrut & duplikasi yang mudah diikuti.",
+      "Tim support dan materi siap pakai."
+    ]
+  };
+
+  const closer = {
+    inspiratif: "Kalau kamu pengin versi hidup yang lebih tertata, drop komentar: “SAYA MAU BELAJAR”.",
+    profesional: "Tinggalkan komentar “INFO LENGKAP” biar tim bantu arahkan langkah praktisnya.",
+    closing: "Ketik “SAYA SIAP” di komentar, nanti aku bantu bimbing dari awal."
+  };
+
+  const pick = (arr)=>arr[Math.floor(Math.random()*arr.length)];
+
+  const header = {
+    "3IReborn":"3iReborn — Bangun Masa Depan Tanpa Kehilangan Hari Ini",
+    "NPA Smart":"NPA Smart System — Auto Follow-Up + Konten Harian",
+    "Nganggur Aja":"Nganggur Aja — Santai Tapi Produktif & Bertumbuh",
+    "Promo Zoom":"Zoom Malam Ini 19:00 WIB — Join & Tanyakan Semua",
+    "Bonus Leader":"Level-up Leader — Bonus Jalan, Tim Berkembang"
+  }[tema];
+
+  const body = (points[tema]||[]).map(x=>"• "+x).join("\n");
+  const cap = `${header}\n\n${pick(openers[tone])}\n\n${body}\n\n${closer[tone]}\n\n—\nNote: Link (kalau perlu) akan aku taruh di kolom komentar ya.`;
+
+  capEl.value = cap;
+}
+
+function copyCaption(){
+  capEl.select(); capEl.setSelectionRange(0,99999);
+  try{
+    document.execCommand('copy');
+    copyCapBtn.textContent = '✅ Tersalin';
+    setTimeout(()=>copyCapBtn.textContent='📋 Salin Caption',1200);
+  }catch(e){
+    navigator.clipboard.writeText(capEl.value||'');
+    copyCapBtn.textContent = '✅ Tersalin';
+    setTimeout(()=>copyCapBtn.textContent='📋 Salin Caption',1200);
+  }
+}
+
+/* ==== Events ==== */
+autoPromptBtn.addEventListener('click', autoPrompt);
+genBtn.addEventListener('click', generateImage);
+regenBtn.addEventListener('click', generateImage);
+dlBtn.addEventListener('click', ()=>{
+  if(!lastImageUrl) return;
+  const a=document.createElement('a');
+  a.href=lastImageUrl; a.download='npa-image.jpg'; a.target='_blank'; a.click();
+});
+makeCapBtn.addEventListener('click', makeCaption);
+copyCapBtn.addEventListener('click', copyCaption);
+
+/* Defaults */
+autoPrompt();
+makeCaption();
+</script>
+</body>
+</html>
