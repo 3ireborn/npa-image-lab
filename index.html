@@ -16,9 +16,6 @@
       font-size: 1.8em;
       color: #00ffc6;
     }
-    p {
-      color: #a9a9a9;
-    }
     .container {
       background: #111319;
       border-radius: 18px;
@@ -51,9 +48,7 @@
       transition: 0.3s;
       cursor: pointer;
     }
-    button:hover {
-      background: #00d9a3;
-    }
+    button:hover { background: #00d9a3; }
     img {
       width: 100%;
       border-radius: 12px;
@@ -68,11 +63,18 @@
       border-radius: 8px;
       font-size: 0.9em;
     }
-    #loading {
-      margin-top: 12px;
-      color: #aaa;
-      font-style: italic;
+    #loading { margin-top: 12px; color: #aaa; font-style: italic; }
+    .btn-group button {
+      width: 100%;
+      margin-top: 6px;
+      border-radius: 10px;
+      padding: 12px;
+      font-weight: 600;
     }
+    .copy-btn { background: #f0f0f0; color: #000; }
+    .refresh-btn { background: #ffc107; color: #000; }
+    .send-btn { background: #00c853; color: #fff; }
+    .download-btn { background: #1976d2; color: #fff; }
   </style>
 </head>
 <body>
@@ -111,10 +113,19 @@
 
     <img id="result-image" style="display:none;" />
     <div id="caption" class="caption" style="display:none;"></div>
+
+    <div class="btn-group">
+      <button class="copy-btn" onclick="copyCaption()">📋 Copy Caption</button>
+      <button class="refresh-btn" onclick="refreshCaption()">🔄 Refresh Caption</button>
+      <button class="send-btn" onclick="sendToNPA()">📡 Kirim ke NPA Smart</button>
+      <button class="download-btn" onclick="downloadPost()">⬇️ Download Gambar + Caption</button>
+    </div>
   </div>
 
   <script>
     const API_URL = "https://npa-image-backend.vercel.app/api/generate";
+    let currentImage = "";
+    let currentCaption = "";
 
     async function generateImage() {
       const prompt = document.getElementById("prompt").value.trim();
@@ -122,10 +133,7 @@
       const ratio = document.getElementById("ratio").value;
       const captionTone = document.getElementById("captionTone").value;
 
-      if (!prompt) {
-        alert("Isi dulu idenya beb 😄");
-        return;
-      }
+      if (!prompt) return alert("Isi dulu idenya beb 😄");
 
       document.getElementById("loading").style.display = "block";
       document.getElementById("result-image").style.display = "none";
@@ -142,25 +150,54 @@
         document.getElementById("loading").style.display = "none";
 
         if (data.ok) {
-          document.getElementById("result-image").src = data.image;
-          document.getElementById("result-image").style.display = "block";
+          currentImage = data.image;
+          currentCaption = `🌿 *${data.caption || "Setiap karya adalah bentuk syukur."}*\n\n💬 ${prompt}\n\n✨ #3IReborn #NPA #SmartSystem #Syariah #InspirasiHidup`;
 
-          // Smart Caption 3IReborn Mode
-          const smartCaption = `🌿 *${data.caption || "Setiap karya adalah bentuk syukur."}*\n\n` +
-            `💬 Refleksi: ${prompt}\n\n` +
-            `✨ #3IReborn #NPA #SmartSystem #Syariah #InspirasiHidup`;
-          
-          document.getElementById("caption").innerText = smartCaption;
+          document.getElementById("result-image").src = currentImage;
+          document.getElementById("result-image").style.display = "block";
+          document.getElementById("caption").innerText = currentCaption;
           document.getElementById("caption").style.display = "block";
-        } else {
-          alert("❌ Gagal generate: " + data.error);
-        }
+        } else alert("❌ Gagal generate: " + data.error);
       } catch (err) {
         document.getElementById("loading").style.display = "none";
         alert("⚠️ Terjadi kesalahan koneksi: " + err.message);
       }
     }
+
+    function copyCaption() {
+      navigator.clipboard.writeText(currentCaption || "Belum ada caption");
+      alert("✅ Caption berhasil disalin!");
+    }
+
+    function refreshCaption() {
+      alert("🔄 Caption baru akan otomatis dibuat saat generate ulang gambar!");
+    }
+
+    function sendToNPA() {
+      alert("📡 Fitur integrasi ke NPA Smart akan aktif setelah backend tersambung penuh!");
+    }
+
+    function downloadPost() {
+      if (!currentImage || !currentCaption) {
+        alert("⚠️ Belum ada hasil untuk diunduh!");
+        return;
+      }
+
+      const linkImage = document.createElement("a");
+      linkImage.href = currentImage;
+      linkImage.download = "3IReborn_Image.jpg";
+      linkImage.click();
+
+      const captionBlob = new Blob([currentCaption], { type: "text/plain" });
+      const captionUrl = URL.createObjectURL(captionBlob);
+      const linkText = document.createElement("a");
+      linkText.href = captionUrl;
+      linkText.download = "3IReborn_Caption.txt";
+      linkText.click();
+
+      alert("✅ Gambar dan caption berhasil diunduh!");
+    }
   </script>
 
 </body>
-  </html>
+</html>
