@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NPA Image Lab — AI Generator + Caption (FB Pro)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{--pri:#2563eb;--bg:#f8fafc;--ink:#0f172a;--mut:#64748b;--card:#ffffff;--ok:#16a34a;--warn:#f59e0b}
+  *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Segoe UI,Arial;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:980px;margin:32px auto;padding:0 16px}
+  .h1{font-size:28px;font-weight:800;margin:0 0 6px}
+  .mut{color:var(--mut)}
+  .grid{display:grid;gap:16px}
+  @media(min-width:860px){.grid{grid-template-columns:1.1fr .9fr}}
+  .card{background:var(--card);border:1px solid #e5e7eb;border-radius:16px;padding:16px}
+  label{font-weight:600;display:block;margin:10px 0 6px}
+  input,select,textarea{width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px;font:inherit;background:#fff}
+  textarea{min-height:96px;resize:vertical}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .btn{appearance:none;border:0;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}
+  .pri{background:var(--pri);color:#fff} .sec{background:#e2e8f0} .ok{background:var(--ok);color:#fff}
+  .ghost{background:#fff;border:1px dashed #cbd5e1}
+  .imgbox{position:relative;border-radius:14px;overflow:hidden;border:1px solid #e5e7eb;background:#fff}
+  .imgbox img{width:100%;display:block}
+  .cap{white-space:pre-wrap;background:#f1f5f9;border:1px dashed #cbd5e1;border-radius:12px;padding:12px}
+  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#eef2ff;color:#3730a3;font-weight:700;font-size:12px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div style="margin-bottom:18px">
+      <div class="pill">NPA Image Lab</div>
+      <h1 class="h1">AI Image Generator + Caption Builder (FB Pro)</h1>
+      <div class="mut">Bikin gambar AI bertema 3iReborn / Nganggur Aja / NPA Smart, plus caption yang aman untuk FB Pro (tanpa link di caption).</div>
+    </div>
+
+    <div class="grid">
+      <!-- controls -->
+      <div class="card">
+        <label>Tema</label>
+        <select id="theme">
+          <option value="3ireborn">3iReborn</option>
+          <option value="nganggur">Nganggur Aja</option>
+          <option value="npa">NPA Smart System</option>
+        </select>
+
+        <div class="row">
+          <div style="flex:1">
+            <label>Gaya Visual</label>
+            <select id="style">
+              <option value="clean corporate soft blue">Clean corporate (biru lembut)</option>
+              <option value="elegant dark gold accents">Elegant dark</option>
+              <option value="bold poster high contrast">Bold poster</option>
+              <option value="photo realistic lifestyle">Photo realistic</option>
+            </select>
+          </div>
+          <div style="flex:1">
+            <label>Rasio</label>
+            <select id="ratio">
+              <option value="square">1:1 (Feed)</option>
+              <option value="portrait">4:5 (Reel/Feed)</option>
+              <option value="story">9:16 (Story/Reel)</option>
+            </select>
+          </div>
+        </div>
+
+        <label>Prompt (boleh edit)</label>
+        <textarea id="prompt" placeholder="Tulis deskripsi gambarnya…"></textarea>
+
+        <div class="row" style="margin-top:8px">
+          <button class="btn ghost" id="promptSuggest">🎯 Auto Prompt</button>
+          <button class="btn pri" id="btnGen">🚀 Generate Gambar</button>
+        </div>
+
+        <div id="genStatus" class="mut" style="margin-top:10px"></div>
+      </div>
+
+      <!-- output -->
+      <div class="card">
+        <div class="imgbox" id="imgBox" style="display:none"><img id="resultImg" alt="result"/></div>
+        <div class="row" style="margin-top:10px;display:none" id="imgBtns">
+          <a id="downloadBtn" class="btn sec" download="npa-image.png">⬇️ Download</a>
+          <button id="copyCaption1" class="btn ok">📋 Copy Caption 1</button>
+          <button id="copyCaption2" class="btn ok">📋 Copy Caption 2</button>
+          <button id="copyCaption3" class="btn ok">📋 Copy Caption 3</button>
+        </div>
+
+        <div id="capsWrap" style="display:none;margin-top:14px">
+          <label>Caption 1 — Edukatif (tanpa link)</label>
+          <div class="cap" id="cap1"></div>
+
+          <label style="margin-top:10px">Caption 2 — Soft Selling (tanpa link)</label>
+          <div class="cap" id="cap2"></div>
+
+          <label style="margin-top:10px">Caption 3 — Engagement (tanpa link)</label>
+          <div class="cap" id="cap3"></div>
+
+          <label style="margin-top:12px">Komentar Pertama (taruh link di sini)</label>
+          <textarea id="firstComment" class="cap" style="background:#fff"></textarea>
+          <div class="row" style="margin-top:8px">
+            <button id="copyComment" class="btn pri">📋 Copy Komentar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin:20px 0" class="mut">Tips FB Pro: simpan link di komentar pertama, jangan di caption. Balas komentar dengan emoji & sapaan untuk naikin reach.</div>
+  </div>
+
+<script>
+const WORKER_URL = "https://YOUR-WORKER-SUBDOMAIN.workers.dev"; // <-- ganti dengan URL Cloudflare Worker-mu
+
+const el = id=>document.getElementById(id);
+const themeSel=el('theme'), styleSel=el('style'), ratioSel=el('ratio'), promptEl=el('prompt');
+const statusEl=el('genStatus'), imgBox=el('imgBox'), img=el('resultImg'), imgBtns=el('imgBtns');
+const cap1=el('cap1'), cap2=el('cap2'), cap3=el('cap3'), capsWrap=el('capsWrap');
+const firstComment=el('firstComment');
+const downloadBtn=el('downloadBtn');
+
+const BASE_NEG = "low quality, blurry, watermark, text artifacts, bad hands, cropped, logo";
+
+const ratioMap = {
+  square: { width: 1024, height: 1024 },
+  portrait: { width: 1024, height: 1280 },
+  story: { width: 896, height: 1600 },
+};
+
+const themePrompts = {
+  "3ireborn": "poster 3iReborn, perlindungan jiwa + investasi jangka panjang, suasana optimis profesional, icon shield + growth, orang Indonesia tersenyum sopan",
+  "nganggur": "poster Nganggur Aja, kerja dari mana saja, simple minimal fun, ikon roket, vibes santai tapi produktif",
+  "npa": "poster NPA Smart System, otomasi follow-up AI, UI dashboard elegan, ikon bot + grafik naik, nuansa teknologi humanis"
+};
+
+function autoPrompt(){
+  const t = themeSel.value;
+  const s = styleSel.value;
+  const base = themePrompts[t];
+  const p = `${base}, style ${s}, clean typography, soft blue-white theme, high detail, sharp focus`;
+  promptEl.value = p;
+}
+el('promptSuggest').onclick = autoPrompt;
+autoPrompt();
+
+async function generate(){
+  const model = "black-forest-labs/flux-schnell"; // cepat & bagus
+  const {width,height} = ratioMap[ratioSel.value];
+  const prompt = promptEl.value.trim();
+  if(!prompt){ alert("Isi prompt dulu ya"); return; }
+
+  statusEl.textContent = "Mengirim prompt ke model…";
+  const start = await fetch(WORKER_URL + "/api/replicate", {
+    method:"POST", headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      model,
+      input: { prompt, width, height, num_outputs: 1, guidance: 1.5, negative_prompt: BASE_NEG }
+    })
+  });
+  const sp = await start.json();
+  if(!sp.id){ statusEl.textContent = "Gagal memulai job. Cek Worker URL & token."; return; }
+
+  statusEl.textContent = "Memproses… (butuh beberapa detik)";
+  let out=null;
+  for(let i=0;i<40;i++){
+    await new Promise(r=>setTimeout(r, 2000));
+    const poll = await fetch(WORKER_URL + "/api/replicate?id=" + sp.id);
+    const pj = await poll.json();
+    if(pj.error){ statusEl.textContent = "Error: " + pj.error; return; }
+    if(pj.status === "succeeded"){ out = pj.output; break; }
+    if(pj.status === "failed" || pj.status==="canceled"){ statusEl.textContent = "Gagal memproses."; return; }
+  }
+  if(!out || !out.length){ statusEl.textContent = "Tidak ada output."; return; }
+
+  const url = Array.isArray(out) ? out[0] : out;
+  img.src = url;
+  imgBox.style.display = "";
+  imgBtns.style.display = "";
+  downloadBtn.href = url;
+
+  // generate captions
+  const captions = makeCaptions(themeSel.value);
+  cap1.textContent = captions[0];
+  cap2.textContent = captions[1];
+  cap3.textContent = captions[2];
+  firstComment.value = makeFirstComment(themeSel.value);
+  capsWrap.style.display = "";
+  statusEl.textContent = "Selesai. Gambar & caption siap!";
+}
+el('btnGen').onclick = generate;
+
+// Caption builder — aman untuk FB Pro (tanpa link)
+function makeCaptions(theme){
+  const hashBase = "#3IReborn #NPA #NganggurPreneur #DigitalDuplication";
+  if(theme === "3ireborn"){
+    return [
+`Semua orang ingin masa depan yang tenang.
+3iReborn bantu gabungkan perlindungan jiwa + tabungan investasi dengan cara yang manusiawi.
+
+Hari ini mulai paham → besok lebih tenang.
+Komentar “INFO” ya, nanti aku kirim detailnya. ${hashBase}`,
+`Ternyata menyiapkan masa depan nggak harus rumit.
+Dengan bimbingan leader dan sistem yang rapi, kamu bisa mulai dari kecil dan bertumbuh konsisten.
+
+Kalau mau rangkuman singkatnya, tulis “MAU”. ${hashBase}`,
+`Coba bayangin 6–12 bulan ke depan:
+lebih disiplin nabung, ngerti proteksi, dan punya jalur penghasilan yang halal & rapi.
+
+Ping aja “SIAP” kalau mau aku kirim step-by-step-nya. ${hashBase}`
+    ];
+  }
+  if(theme === "npa"){
+    return [
+`Follow-Up manual capek? NPA Smart System ngasih cara yang lebih rapi:
+auto link, auto follow-up, auto duplikasi — tapi tetap human-friendly.
+
+Tulis “COBA” kalau mau lihat demonya. ${hashBase}`,
+`Banyak yang stuck di follow-up. Solusinya: sistem yang bantu kerja repetitif biar kita fokus ngobrol ke orang yang tepat.
+
+Ketik “DEMO” ya biar kukirim contoh alurnya. ${hashBase}`,
+`Target bulan ini: lebih konsisten, lebih terukur.
+NPA bantu bikin kerjaan kamu berulang dan mudah diduplikasi tim.
+
+Balas “AKTIF” kalau mau panduan 10 menitnya. ${hashBase}`
+    ];
+  }
+  // nganggur
+  return [
+`“Nganggur Aja” bukan malas — ini tentang kerja cerdas.
+Bikin sistem yang kerja buat kita, bukan sebaliknya.
+
+Tulis “BELAJAR” kalau pingin versi ringkasnya. ${hashBase}`,
+`Goal-nya simpel: waktu fleksibel, income makin rapi.
+Mulai dari langkah kecil, duplikasi ke tim, dan pantau lewat sistem.
+
+Komen “SIAP” ya, nanti kukirim langkah awalnya. ${hashBase}`,
+`Kalau kamu cari cara kerja yang manusiawi dan tetap bertumbuh, ini bisa jadi jalur yang cocok.
+
+Balas “MAU” untuk rangkuman 1 halaman. ${hashBase}`
+  ];
+}
+
+function makeFirstComment(theme){
+  // Tempat taruh link. Kamu bisa masukkan link LP Master/LP HOT/Form di sini.
+  return `🔗 Link ada di komentar ini biar aman ke algoritma FB Pro.
+
+🌐 LP Master:
+https://3ireborn.github.io/pendaftaran-online/lp-master-v6.6.html?name=Nama+Anda&wa=628xx&slug=slug-anda
+
+🔥 LP HOT:
+https://3ireborn.github.io/pendaftaran-online/lp-hot-v6.6.html?name=Nama+Anda&wa=628xx&slug=slug-anda
+
+📝 Form Pendaftaran:
+https://3ireborn.github.io/pendaftaran-online/form-pendaftaran-v3.1.html?name=Nama+Anda&wa=628xx&slug=slug-anda
+
+Tips: balas komentar masuk dalam 5–10 menit pertama.`;
+}
+
+// copy helpers
+function copyTxt(t){ navigator.clipboard.writeText(t); }
+el('copyCaption1').onclick = ()=>copyTxt(cap1.textContent);
+el('copyCaption2').onclick = ()=>copyTxt(cap2.textContent);
+el('copyCaption3').onclick = ()=>copyTxt(cap3.textContent);
+el('copyComment').onclick   = ()=>copyTxt(firstComment.value);
+</script>
+</body>
+                                                       </html>
