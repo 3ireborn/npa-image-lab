@@ -3,52 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NPA Image Lab | 3IReborn Smart Caption FB-Pro</title>
+  <title>NPA Image Lab | 3IReborn Pro Creator Panel</title>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #0b0c10, #1b1c22);
+      background: linear-gradient(135deg, #050608, #101218);
       color: #f3f3f3;
       text-align: center;
       padding: 20px;
     }
     h1 {
-      font-size: 1.8em;
+      font-size: 1.9em;
       color: #00ffc6;
+      margin-bottom: 4px;
+    }
+    h2 {
+      font-size: 1em;
+      color: #ccc;
+      margin-top: 0;
     }
     .container {
       background: #111319;
-      border-radius: 18px;
-      box-shadow: 0 0 15px rgba(0, 255, 198, 0.2);
-      padding: 20px;
-      max-width: 480px;
-      margin: 25px auto;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0, 255, 198, 0.2);
+      padding: 25px;
+      max-width: 500px;
+      margin: 20px auto;
     }
-    textarea, select, button {
+    textarea, select, input[type="file"], button {
       width: 100%;
       margin: 8px 0;
       padding: 10px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       font-size: 1em;
     }
-    textarea {
+    textarea, select {
       background: #1a1a1a;
       color: #eee;
-      resize: vertical;
     }
-    select {
-      background: #1a1a1a;
-      color: #eee;
+    input[type="file"] {
+      background: #20232b;
+      color: #aaa;
     }
     button {
-      background: #00ffc6;
-      color: #000;
       font-weight: 600;
-      transition: 0.3s;
       cursor: pointer;
+      transition: 0.3s;
     }
-    button:hover { background: #00d9a3; }
+    button:hover { opacity: 0.9; }
+    .btn-main { background: #00ffc6; color: #000; }
+    .btn-copy { background: #fff; color: #000; }
+    .btn-refresh { background: #ffc107; color: #000; }
+    .btn-send { background: #00c853; color: #fff; }
+    .btn-download { background: #1976d2; color: #fff; }
     img {
       width: 100%;
       border-radius: 12px;
@@ -62,27 +70,32 @@
       text-align: left;
       border-radius: 8px;
       font-size: 0.9em;
+      white-space: pre-wrap;
     }
     #loading { margin-top: 12px; color: #aaa; font-style: italic; }
-    .btn-group button {
-      width: 100%;
-      margin-top: 6px;
-      border-radius: 10px;
-      padding: 12px;
-      font-weight: 600;
-    }
-    .copy-btn { background: #f0f0f0; color: #000; }
-    .refresh-btn { background: #ffc107; color: #000; }
-    .send-btn { background: #00c853; color: #fff; }
-    .download-btn { background: #1976d2; color: #fff; }
   </style>
 </head>
 <body>
 
   <h1>🧠 NPA Image Lab</h1>
-  <p>3IReborn Smart Caption FB-Pro Mode — Inspirasi & Syariah</p>
+  <h2>3IReborn Smart Caption FB-Pro Mode — Inspirasi & Syariah</h2>
 
   <div class="container">
+    <label>🧩 Tema Karya</label>
+    <select id="theme">
+      <option>3IReborn</option>
+      <option>NPA Smart</option>
+      <option>Nganggur Aja</option>
+      <option>Bisnis Syariah</option>
+      <option>Motivasi Hidup</option>
+      <option>Keluarga Islami</option>
+      <option>Doa & Harapan</option>
+      <option>Inspirasi Finansial</option>
+      <option>Spiritual Journey</option>
+      <option>Gaya Hidup Sehat</option>
+      <option>✨ Custom Tema Sendiri</option>
+    </select>
+
     <textarea id="prompt" placeholder="Tuliskan ide atau tema gambarnya..."></textarea>
 
     <label>🎨 Gaya Visual</label>
@@ -91,6 +104,8 @@
       <option>Elegant Minimalist</option>
       <option>Warm Natural Light</option>
       <option>Digital Art</option>
+      <option>Luxury Studio Portrait</option>
+      <option>Nature Outdoor</option>
     </select>
 
     <label>🖼️ Rasio Gambar</label>
@@ -106,20 +121,22 @@
       <option>Motivasi Lembut</option>
       <option>Renungan Hidup</option>
       <option>Doa & Harapan</option>
+      <option>Leadership</option>
     </select>
 
-    <button onclick="generateImage()">🚀 Generate Gambar</button>
+    <label>📁 Upload Gambar (opsional)</label>
+    <input type="file" id="imageUpload" accept="image/*">
+
+    <button class="btn-main" onclick="generateImage()">🚀 Generate Gambar</button>
     <div id="loading" style="display:none;">⏳ Sedang membuat gambar dan caption...</div>
 
     <img id="result-image" style="display:none;" />
     <div id="caption" class="caption" style="display:none;"></div>
 
-    <div class="btn-group">
-      <button class="copy-btn" onclick="copyCaption()">📋 Copy Caption</button>
-      <button class="refresh-btn" onclick="refreshCaption()">🔄 Refresh Caption</button>
-      <button class="send-btn" onclick="sendToNPA()">📡 Kirim ke NPA Smart</button>
-      <button class="download-btn" onclick="downloadPost()">⬇️ Download Gambar + Caption</button>
-    </div>
+    <button class="btn-copy" onclick="copyCaption()">📋 Copy Caption</button>
+    <button class="btn-refresh" onclick="refreshCaption()">🔄 Refresh Caption</button>
+    <button class="btn-send" onclick="sendToNPA()">📡 Kirim ke NPA Smart</button>
+    <button class="btn-download" onclick="downloadPost()">⬇️ Download Gambar + Caption</button>
   </div>
 
   <script>
@@ -132,6 +149,7 @@
       const style = document.getElementById("style").value;
       const ratio = document.getElementById("ratio").value;
       const captionTone = document.getElementById("captionTone").value;
+      const theme = document.getElementById("theme").value;
 
       if (!prompt) return alert("Isi dulu idenya beb 😄");
 
@@ -143,7 +161,7 @@
         const res = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt, style, ratio, captionTone })
+          body: JSON.stringify({ prompt, style, ratio, captionTone, theme })
         });
 
         const data = await res.json();
@@ -151,7 +169,7 @@
 
         if (data.ok) {
           currentImage = data.image;
-          currentCaption = `🌿 *${data.caption || "Setiap karya adalah bentuk syukur."}*\n\n💬 ${prompt}\n\n✨ #3IReborn #NPA #SmartSystem #Syariah #InspirasiHidup`;
+          currentCaption = `🌿 *${data.caption || "Setiap karya adalah bentuk syukur."}*\n\n🧩 Tema: ${theme}\n💬 ${prompt}\n\n✨ #3IReborn #NPA #SmartSystem #Syariah #InspirasiHidup`;
 
           document.getElementById("result-image").src = currentImage;
           document.getElementById("result-image").style.display = "block";
@@ -174,7 +192,7 @@
     }
 
     function sendToNPA() {
-      alert("📡 Fitur integrasi ke NPA Smart akan aktif setelah backend tersambung penuh!");
+      alert("📡 Integrasi NPA Smart aktif setelah backend full sync!");
     }
 
     function downloadPost() {
