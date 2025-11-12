@@ -3,360 +3,431 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>NPA Image Lab v2 — Dummy AI Generator (Square)</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<title>NPA Image Lab — AI Prompt & Caption Builder (Dummy)</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#081029; --card:#0f1724; --muted:#a6b0c3; --accent:#1e90ff;
-    --glow: rgba(30,144,255,0.14);
-    --btn:#0ea5e9; --white:#eef6ff;
+    --bg:#071026; --card:#0f1724; --card-2:#0b2236; --glass: rgba(255,255,255,0.04);
+    --muted:#9fb3c8; --accent:#00f5c4; --accent-2:#28a7ff; --white:#f7fbff;
+    --pill:#0c2b45;
   }
   *{box-sizing:border-box}
-  body{margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial; background:linear-gradient(180deg,var(--bg),#021026 120%); color:var(--white); -webkit-font-smoothing:antialiased}
-  .wrap{max-width:1100px;margin:28px auto;padding:22px}
-  header{display:flex;gap:16px;align-items:center}
-  .logo{width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,#0ea5e9,#2563eb);display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:0 8px 30px var(--glow)}
-  h1{font-size:20px;margin:0}
-  p.lead{color:var(--muted);margin:4px 0 0;font-size:13px}
-
-  .grid{display:grid;grid-template-columns:1fr 420px;gap:18px;margin-top:18px}
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); padding:16px;border-radius:12px;box-shadow:0 8px 40px rgba(2,6,23,0.5)}
-  label{display:block;font-size:13px;margin-bottom:8px;color:var(--muted);font-weight:600}
-  select,input,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:var(--white);outline:none}
-  textarea{min-height:84px;resize:vertical}
-  .row{display:flex;gap:10px}
-  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
-  .btn-primary{background:linear-gradient(90deg,var(--btn),var(--accent));color:#012;box-shadow:0 8px 30px rgba(30,144,255,0.18)}
-  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white)}
+  html,body{height:100%}
+  body{margin:0;font-family:Poppins,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:
+    linear-gradient(180deg,#041026 0%, #061528 60%); color:var(--white); -webkit-font-smoothing:antialiased}
+  .wrap{max-width:820px;margin:20px auto;padding:20px}
+  h1{margin:0 0 8px;font-size:28px;line-height:1.05}
+  p.lead{color:var(--muted);margin:0 0 14px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
+        border:1px solid rgba(255,255,255,0.03); border-radius:14px;padding:18px;margin:14px 0; box-shadow:0 10px 30px rgba(2,6,23,0.6)}
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+  select,input,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--white)}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .col{flex:1;min-width:140px}
+  .btn{display:inline-flex;gap:8px;align-items:center;justify-content:center;padding:12px 14px;border-radius:12px;border:0;cursor:pointer;font-weight:700}
+  .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#012;
+             box-shadow:0 6px 18px rgba(40,167,255,0.12)}
+  .btn-white{background:#ffffff10;color:var(--white);border:1px solid rgba(255,255,255,0.06)}
+  .btn-yellow{background:#ffcf4b;color:#082; font-weight:800}
   .muted{color:var(--muted);font-size:13px}
-  .tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-
-  /* preview */
-  .preview-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
-  .preview{width:360px;height:360px;border-radius:12px;background:linear-gradient(180deg,#071127,#0b1320);display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
-  .preview img{width:100%;height:100%;object-fit:cover;display:block}
-  .caption-box{width:100%;}
-  .meta{display:flex;justify-content:space-between;align-items:center;width:100%}
-  .small{font-size:12px;color:var(--muted)}
-
-  footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
-  .copy-ok{color:#7ef3a4;font-weight:700;margin-left:8px;font-size:13px}
-
-  /* responsive */
-  @media (max-width:980px){
-    .grid{grid-template-columns:1fr;align-items:start}
-    .preview{width:320px;height:320px}
-  }
+  .preview{height:360px;border-radius:12px;overflow:hidden;background:#071026;display:flex;align-items:center;justify-content:center;position:relative}
+  .preview img{max-width:100%;max-height:100%;object-fit:cover;display:block}
+  .controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .small{font-size:13px;padding:8px 10px;border-radius:8px}
+  .badge{background:#081828;padding:6px 10px;border-radius:999px;color:var(--muted);font-weight:600}
+  footer{color:var(--muted);font-size:13px;margin-top:12px;text-align:center}
+  .toast{position:fixed;right:20px;bottom:20px;background:#0b2b3a;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);color:var(--white)}
+  .switch{display:inline-flex;align-items:center;gap:8px}
+  .mode-toggle{background:linear-gradient(180deg,#ffffff10,#ffffff05);padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+  textarea{min-height:110px;resize:vertical}
+  .caption-box{background:linear-gradient(180deg,#021427,#031b2b);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);color:var(--muted)}
+  .hint{font-size:12px;color:#9fb3c8;margin-top:6px}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="logo">NPA</div>
-      <div>
-        <h1>NPA Image Lab v2 — Dummy AI Generator</h1>
-        <p class="lead">Prompt builder & caption generator — mode gratis (dummy). Hasil gambar square (1:1) dari Unsplash.</p>
-      </div>
-    </header>
+<div class="wrap">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+    <div>
+      <h1>NPA Image Lab — Prompt & Caption Builder</h1>
+      <p class="lead">Default: <strong>4:5 (Feed)</strong>. Generator dummy (Unsplash) — tanpa API key. Mode: <span id="modeLabel">Dark</span></p>
+    </div>
+    <div class="mode-toggle" title="Toggle mode">
+      <button id="toggleMode" class="badge">Toggle Mode</button>
+    </div>
+  </div>
 
-    <div class="grid">
-      <!-- LEFT: Controls -->
-      <div class="card">
-        <label>Pilih Tema (31 pilihan)</label>
+  <div class="card">
+    <div style="display:flex;gap:14px;flex-wrap:wrap">
+      <div style="flex:1;min-width:260px">
+        <label>Pilih Ide Gambar (Auto prompt)</label>
         <select id="themeSelect">
-          <option value="Motivasi Pagi">Motivasi Pagi</option>
-          <option value="Networking for Ummah">Networking for Ummah</option>
-          <option value="3IReborn Spirit">3IReborn Spirit</option>
-          <option value="NganggurPreneur Academy">NganggurPreneur Academy</option>
-          <option value="Bisnis Syariah">Bisnis Syariah</option>
-          <option value="Produktif & Berkah">Produktif & Berkah</option>
-          <option value="Kebiasaan Positif">Kebiasaan Positif</option>
-          <option value="KSM Movement">KSM Movement</option>
-          <option value="Inspirasi Kepemimpinan">Inspirasi Kepemimpinan</option>
-          <option value="Visionary Muslimah">Visionary Muslimah</option>
-          <option value="Financial Freedom">Financial Freedom</option>
-          <option value="Morning Routine">Morning Routine</option>
-          <option value="Work From Home Productive">Work From Home Productive</option>
-          <option value="Family & Business Balance">Family & Business Balance</option>
-          <option value="Digital Marketing Tips">Digital Marketing Tips</option>
-          <option value="Car Insurance Awareness">Car Insurance Awareness</option>
-          <option value="Anti Rugi Mindset">Anti Rugi Mindset</option>
-          <option value="Passive Income Ideas">Passive Income Ideas</option>
-          <option value="Leadership Coaching">Leadership Coaching</option>
-          <option value="Spiritual Business">Spiritual Business</option>
-          <option value="Community Growth">Community Growth</option>
-          <option value="Youth Entrepreneurship">Youth Entrepreneurship</option>
-          <option value="Senior Preparedness">Senior Preparedness</option>
-          <option value="Success Habit">Success Habit</option>
-          <option value="Branding 3IReborn">Branding 3IReborn</option>
-          <option value="Testimonial Style">Testimonial Style</option>
-          <option value="Event Poster">Event Poster</option>
-          <option value="Minimalist Poster">Minimalist Poster</option>
-          <option value="Warm Coffee Vibe">Warm Coffee Vibe</option>
-          <option value="Hope & Resilience">Hope & Resilience</option>
-          <option value="Custom">Custom Prompt...</option>
+          <option value="3ireborn modern finance">3IReborn — Perlindungan & Investasi</option>
+          <option value="nganggur lifestyle relaxed">Nganggur Aja — Lifestyle santai</option>
+          <option value="business syariah modern">Bisnis Syariah Modern</option>
+          <option value="motivational community uplift">Komunitas & Networking</option>
+          <option value="success coaching mentor">Personal Coaching & Mentor</option>
+          <option value="family wellbeing calm">Keluarga & Kesejahteraan</option>
+          <option value="small business storefront">Warung / UMKM yang menggugah selera</option>
+          <option value="islamic spiritual serenity">Inspirasi Islami — Tenang & Syariah</option>
+          <option value="minimalist corporate clean">Clean Corporate — Minimalis</option>
+          <option value="celebration achievement trophy">Celebration — Sukses & Pencapaian</option>
+          <option value="custom">— Custom (ketik di bawah) —</option>
         </select>
 
-        <label style="margin-top:12px">Custom Prompt (opsional)</label>
-        <textarea id="customPrompt" placeholder="Ketik prompt khusus di sini jika pilih Custom..."></textarea>
+        <label style="margin-top:10px">Custom Ide (opsional)</label>
+        <input id="customIdea" placeholder="Tuliskan ide / kata kunci khusus (jika pilih Custom)" />
 
-        <label style="margin-top:12px">Gaya (opsional)</label>
-        <select id="styleSelect">
-          <option value="realistic">Realistic</option>
-          <option value="illustration">Illustration</option>
-          <option value="flat">Flat / Minimal</option>
-          <option value="poster">Poster</option>
-          <option value="digital-art">Digital Art</option>
-          <option value="watercolor">Watercolor</option>
-        </select>
+        <div style="display:flex;gap:10px;margin-top:10px">
+          <div class="col">
+            <label>Gaya Visual</label>
+            <select id="visual">
+              <option>Elegant Minimalist</option>
+              <option>Clean Corporate</option>
+              <option>Warm Homely</option>
+              <option>Clean Islamic</option>
+              <option>Bold Colorful</option>
+              <option>Photography Realistic</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Gaya Caption</label>
+            <select id="tone">
+              <option>Inspiratif</option>
+              <option>Persuasif</option>
+              <option>Motivasi Lembut</option>
+              <option>Serius & Profesional</option>
+              <option>Humoris & Santai</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:10px" class="controls">
+          <div>
+            <label>Rasio Gambar</label>
+            <select id="ratio">
+              <option value="4:5">4:5 — Feed (DEFAULT)</option>
+              <option value="1:1">1:1 — Square</option>
+              <option value="9:16">9:16 — Story/Reels</option>
+            </select>
+          </div>
+          <div>
+            <label>Jumlah Gambar (dummy)</label>
+            <select id="count">
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+            </select>
+          </div>
+        </div>
 
         <div style="margin-top:12px" class="row">
-          <button id="btnGenerate" class="btn btn-primary">🚀 Generate Gambar</button>
-          <button id="btnRefresh" class="btn btn-ghost">🔁 Refresh</button>
+          <button id="genBtn" class="btn btn-primary">🚀 Generate Gambar</button>
+          <button id="copyCaption" class="btn btn-white">📋 Copy Caption</button>
+          <button id="refreshCaption" class="btn btn-yellow">🔄 Refresh Caption</button>
         </div>
 
-        <div class="tools" style="margin-top:12px">
-          <button id="btnCopyPrompt" class="btn btn-ghost">📋 Copy Prompt</button>
-          <button id="btnOpenBing" class="btn btn-ghost">🌐 Open in Bing Image</button>
-          <button id="btnCopyCaption" class="btn btn-ghost">📝 Copy Caption</button>
-          <button id="btnDownload" class="btn btn-ghost">⬇️ Download</button>
+        <div style="margin-top:12px" class="row">
+          <button id="sendNpa" class="btn" style="background:#13a89e;color:#021">📡 Kirim ke NPA Smart</button>
+          <button id="downloadAll" class="btn btn-white">⬇️ Download Gambar + Caption</button>
         </div>
 
-        <div style="margin-top:12px" class="muted">
-          <div><strong>Note:</strong> Mode Dummy — gambar berasal dari Unsplash sesuai tema. Untuk generate AI nyata, hubungkan backend Hugging Face atau layanan lain.</div>
-        </div>
+        <p class="hint">Catatan: generator gambar pakai Unsplash Source (gratis) untuk preview. Ketika kamu mau pakai model AI berbayar, ganti integrasi backend.</p>
       </div>
 
-      <!-- RIGHT: Preview -->
-      <div class="card preview-wrap">
-        <div class="meta" style="width:100%">
-          <div class="small">Preview Square (1:1)</div>
-          <div class="small" id="statusText">Ready</div>
-        </div>
-
-        <div class="preview" id="previewBox" aria-hidden="false">
-          <img id="previewImg" src="https://source.unsplash.com/800x800/?inspiration" alt="preview">
-        </div>
-
-        <div class="caption-box">
-          <label>Prompt (Generated)</label>
-          <textarea id="generatedPrompt" readonly></textarea>
-
-          <label style="margin-top:8px">Caption (FB-friendly)</label>
-          <textarea id="generatedCaption" readonly></textarea>
-
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
-            <div class="muted">Hashtag suggestion: <span style="color:var(--btn)">#3iReborn #NPA</span></div>
-            <div id="copyNote" class="copy-ok" style="display:none">✓ Copied</div>
+      <div style="flex:1;min-width:300px">
+        <label>Preview Gambar</label>
+        <div class="preview card" id="preview">
+          <div style="text-align:center;color:var(--muted)">
+            <div style="font-size:14px">Belum ada gambar</div>
+            <div style="font-size:12px;margin-top:6px">Klik "Generate Gambar"</div>
           </div>
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <label>Caption (aman untuk FB-Pro — <em>tidak</em> menyertakan link)</label>
+          <div id="caption" class="caption-box">Caption akan muncul setelah generate</div>
+          <textarea id="captionHidden" style="display:none"></textarea>
         </div>
       </div>
     </div>
-
-    <footer>
-      NPA Image Lab v2 — Dummy Mode • Built for Nganggur Preneur Akademi (3IReborn) • Square images 800×800
-    </footer>
   </div>
+
+  <div class="card" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+    <div class="badge">Tips</div>
+    <div class="muted">Gunakan caption tanpa link — taruh referral link di kolom komentar saat posting di FB Pro. Tombol "Kirim ke NPA Smart" hanya simulasi (tampilkan payload).</div>
+  </div>
+
+  <footer>Made for Nganggur Preneur Akademi • Dummy mode (no API keys)</footer>
+</div>
+
+<div id="toast" class="toast" style="display:none"></div>
 
 <script>
 (function(){
-  // elements
-  const theme = document.getElementById('themeSelect');
-  const custom = document.getElementById('customPrompt');
-  const style = document.getElementById('styleSelect');
-  const btnGen = document.getElementById('btnGenerate');
-  const btnRef = document.getElementById('btnRefresh');
-  const previewImg = document.getElementById('previewImg');
-  const statusText = document.getElementById('statusText');
-  const genPrompt = document.getElementById('generatedPrompt');
-  const genCaption = document.getElementById('generatedCaption');
-  const btnCopyPrompt = document.getElementById('btnCopyPrompt');
-  const btnCopyCaption = document.getElementById('btnCopyCaption');
-  const btnOpenBing = document.getElementById('btnOpenBing');
-  const btnDownload = document.getElementById('btnDownload');
-  const copyNote = document.getElementById('copyNote');
+  const $ = id => document.getElementById(id);
+  const toast = $('toast');
+  function showToast(msg, t=2500){
+    toast.textContent = msg; toast.style.display='block';
+    setTimeout(()=>toast.style.display='none', t);
+  }
 
-  // helper: builds prompt based on theme + style
-  function buildPrompt(them, customText, styl) {
-    if (them === 'Custom' || them === 'Custom Prompt...') {
-      return customText.trim() || 'A beautiful inspirational scene, minimal composition, high quality';
-    }
-    const base = {
-      "Motivasi Pagi":"A cozy morning scene with a person enjoying coffee and writing plans for the day, warm light, cinematic",
-      "Networking for Ummah":"A friendly networking event of Muslim entrepreneurs, warm atmosphere, modern hall, candid photography",
-      "3IReborn Spirit":"Dynamic portrait of a motivated insurance entrepreneur with confident smile, corporate but warm",
-      "NganggurPreneur Academy":"Training workshop scene showing collaboration, laptop, notes, and excited faces",
-      "Bisnis Syariah":"Elegant office meeting discussing Islamic finance, professional attire, respectful tones",
-      "Produktif & Berkah":"Morning productivity scene, to-do list, coffee, soft sunlight through window",
-      "Kebiasaan Positif":"Daily healthy habit scene, jogging or reading, serene and focused",
-      "KSM Movement":"Energetic group portrait, uniforms with KSM logo, celebratory mood",
-      "Inspirasi Kepemimpinan":"Leader giving inspiring speech on stage with audience, cinematic lighting",
-      "Visionary Muslimah":"Strong female entrepreneur portrait, confident, modern, elegant",
-      "Financial Freedom":"Symbolic image of growing plants and coins, hands nurturing growth, flat design",
-      "Morning Routine":"Peaceful morning desk setup with planner and phone, minimal aesthetic",
-      "Work From Home Productive":"Home office setup, video calls, engaged worker, cozy lighting",
-      "Family & Business Balance":"Family and business life balanced, parent working while child plays nearby",
-      "Digital Marketing Tips":"Flat-lay of marketing tools: phone, laptop, notes, analytics charts",
-      "Car Insurance Awareness":"Friendly agent explaining car insurance benefits, driver and car in background",
-      "Anti Rugi Mindset":"Bold poster-style image with motivational slogan about avoiding losses",
-      "Passive Income Ideas":"Illustration of streams of income, small icons representing diverse streams",
-      "Leadership Coaching":"Personal coaching session, mentor and mentee in discussion",
-      "Spiritual Business":"Prayer corner in workspace with subtle devotional elements, respectful tone",
-      "Community Growth":"Community gathering outdoors, smiling faces, collaborative vibe",
-      "Youth Entrepreneurship":"Young people brainstorming with sticky notes and energy",
-      "Senior Preparedness":"Older couple reviewing documents with advisor, calm and trusted mood",
-      "Success Habit":"Journal and habit tracker close-up, tidy desk aesthetic",
-      "Branding 3IReborn":"Modern brand mockup with logo presentation and confident designer",
-      "Testimonial Style":"Polaroid style testimonial photos with smiling customers",
-      "Event Poster":"Bold poster composition for seminar with headline space",
-      "Minimalist Poster":"Minimal poster with strong typography and single focal icon",
-      "Warm Coffee Vibe":"Close-up of coffee and planner, soft warm tones, inviting mood",
-      "Hope & Resilience":"Symbolic sunrise over city, hopeful mood and uplifting composition"
+  // map ratio to size
+  function sizeForRatio(r){
+    if(r==='4:5') return {w:1080,h:1350};
+    if(r==='1:1') return {w:1080,h:1080};
+    if(r==='9:16') return {w:1080,h:1920};
+    return {w:1080,h:1350};
+  }
+
+  // build prompt from UI
+  function buildPrompt(){
+    const sel = $('themeSelect').value;
+    const custom = $('customIdea').value.trim();
+    const base = sel === 'custom' && custom ? custom : sel;
+    const visual = $('visual').value;
+    return `${base}, ${visual}, high quality poster, bright composition, centered subject, soft lighting, realistic, people smiling (if relevant)`;
+  }
+
+  // caption generator (simple local rules - FB-Pro safe)
+  function generateCaption(prompt, tone){
+    // create a few template variants
+    const templates = {
+      'Inspiratif': [
+        `Banyak yang kaget setelah tahu hal sederhana ini. ${prompt.split(',')[0]}. Pelan tapi pasti — langkah kecil hari ini bisa berubah jadi besar esok.`,
+        `Mulai hari ini dengan niat yang jelas. ${prompt.split(',')[0]} — yakin dan berproses. Yuk bagikan kalau bermanfaat!`
+      ],
+      'Persuasif': [
+        `Ingin hidup lebih aman dan terencana? ${prompt.split(',')[0]} adalah langkah kecil yang bisa kamu mulai hari ini. Coba tanya aku caranya.`,
+        `Jangan tunggu sempurna. Mulai sekarang: fokus pada perlindungan dan pertumbuhan. Ada yang mau tanya?`
+      ],
+      'Motivasi Lembut': [
+        `Santai saja, tapi konsisten. ${prompt.split(',')[0]} — tetap semangat dan percaya proses.`,
+        `Pelan tapi pasti. Lakukan satu tindakan kecil hari ini untuk masa depan yang lebih tenang.`
+      ],
+      'Serius & Profesional': [
+        `Solusi praktis untuk perlindungan dan investasi jangka panjang. ${prompt.split(',')[0]}. Hubungi untuk info terperinci.`,
+        `Pendekatan profesional dan efisien—kita bantu rencanakan langkah Anda ke depan.`
+      ],
+      'Humoris & Santai': [
+        `Ngopi dulu, lalu bergerak. ${prompt.split(',')[0]} — solusi santai untuk hidup lebih #tenang.`,
+        `Biar nggak cuma nganggur doang: langkah kecil hari ini, hasil besar nanti. Siapa mau ikut?`
+      ]
     };
-    const core = base[them] || `${them} scene, high quality, cinematic`;
-    return `${core}. Style: ${styl}. High resolution, sharp detail, soft lighting, photographic composition`;
+
+    const list = templates[tone] || templates['Inspiratif'];
+    // pick randomly
+    const c = list[Math.floor(Math.random()*list.length)];
+    // ensure no links included
+    return c;
   }
 
-  // caption builder (FB-friendly)
-  function buildCaption(them, promptText) {
-    const templates = [
-      `Pagi ini kita siapkan niat dan rencana. Sedikit langkah konsisten, hasil akan mengikuti. #3iReborn`,
-      `Tidak ada jalan pintas — hanya kerja cerdas dan doa. Bismillah, lanjutkan perjuangan!`,
-      `Mulailah hari dengan tujuan. Jadikan setiap tindakan bermakna. #NPA #NganggurPreneur`,
-      `Bersama kita bisa membangun jaringan yang saling menguatkan. Yuk bergerak hari ini!`,
-      `Kesuksesan datang dari kebiasaan kecil yang dilakukan terus-menerus. Tetap semangat!`
-    ];
-    // choose based on theme tone
-    let pick = templates[Math.floor(Math.random()*templates.length)];
-    // gentle prepend for certain themes
-    if (/insurance|Car Insurance|Anti Rugi|Premium|premi/i.test(them)) {
-      pick = `Perlindungan & ketenangan pikiran dimulai dari langkah kecil. ${pick}`;
-    }
-    // include soft CTA (no link)
-    return `${pick}\n\n${promptText.split('.').slice(0,2).join('.')}.\n\n#3iReborn #NPA`;
+  // generate Unsplash URL for dummy image
+  function makeImageURL(prompt, ratio){
+    const s = sizeForRatio(ratio);
+    // unsplash source with query
+    const q = encodeURIComponent(prompt.replace(/\s+/g,' '));
+    // using source.unsplash to avoid api key
+    return `https://source.unsplash.com/${s.w}x${s.h}/?${q}`;
   }
 
-  // generate image (dummy from unsplash)
-  async function generateImage() {
-    const them = theme.value;
-    const styl = style.value;
-    const customText = custom.value;
-    const prompt = buildPrompt(them, customText, styl);
-    genPrompt.value = prompt;
-    statusText.textContent = 'Membuat gambar...';
-    btnGen.disabled = true;
-    btnGen.textContent = '⏳ Membuat...';
-    // simulate delay for realism
-    await new Promise(r => setTimeout(r, 900 + Math.random()*900));
-    // unsplash keywords - use theme words and style
-    const keywords = encodeURIComponent(`${them} ${styl} inspiration`);
-    const url = `https://source.unsplash.com/800x800/?${keywords}`;
-    // set preview
-    previewImg.src = url + '&' + Date.now(); // cache buster
-    // caption
-    const caption = buildCaption(them, prompt);
-    genCaption.value = caption;
-    statusText.textContent = 'Selesai';
-    btnGen.disabled = false;
-    btnGen.textContent = '🚀 Generate Gambar';
-  }
+  // state
+  let lastImageURL = '';
+  let lastPrompt = '';
 
-  // refresh image (re-apply last prompt)
-  function refreshImage(){
-    // trigger regenerate using current prompt (will fetch new unsplash)
-    previewImg.src = previewImg.src.split('?')[0] + '?' + Date.now();
-    statusText.textContent = 'Refresh gambar...';
-    setTimeout(()=>statusText.textContent='Selesai',800);
-  }
-
-  // copy helpers
-  async function copyText(txt, show=true){
-    try {
-      await navigator.clipboard.writeText(txt);
-      copyNote.style.display='inline-block';
-      copyNote.textContent='✓ Copied';
-      setTimeout(()=>copyNote.style.display='none',1200);
-    } catch(e){
-      alert('Gagal menyalin. Izinkan akses clipboard.');
-    }
-  }
-
-  // download image: try fetch blob then download
-  async function downloadImage(){
+  // generate action
+  $('genBtn').addEventListener('click', async ()=>{
+    const prompt = buildPrompt();
+    const ratio = $('ratio').value;
+    const tone = $('tone').value;
+    lastPrompt = prompt;
+    const url = makeImageURL(prompt, ratio);
+    lastImageURL = url;
+    // show loading
+    const preview = $('preview');
+    preview.innerHTML = '<div style="color:var(--muted)">Sedang mengambil gambar dari Unsplash…</div>';
     try{
-      statusText.textContent='Menyiapkan download...';
-      const res = await fetch(previewImg.src);
-      const blob = await res.blob();
-      const a = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      a.href = url;
-      a.download = 'npa-image-800x800.jpg';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      statusText.textContent='Download selesai';
-      setTimeout(()=>statusText.textContent='Selesai',900);
+      // load image with crossOrigin to allow canvas draw
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function(){
+        preview.innerHTML = '';
+        img.style.width='100%';
+        img.style.height='100%';
+        img.style.objectFit='cover';
+        preview.appendChild(img);
+        // generate caption
+        const cap = generateCaption(prompt, tone);
+        $('caption').textContent = cap;
+        $('captionHidden').value = cap;
+        showToast('Gambar & caption siap ✅');
+      };
+      img.onerror = function(){
+        preview.innerHTML = '<div style="color:var(--muted)">Gagal ambil gambar — coba lagi</div>';
+        showToast('Gagal ambil gambar (CORS/ jaringan).', 3000);
+      };
+      img.src = url + '&sig=' + Math.random().toString(36).slice(2,8); // sig untuk variasi cache
     }catch(e){
-      alert('Gagal download: ' + e.message);
-      statusText.textContent='Error';
+      preview.innerHTML = '<div style="color:var(--muted)">Error saat generate</div>';
+      console.error(e);
+      showToast('Error saat generate',3000);
     }
+  });
+
+  // copy caption
+  $('copyCaption').addEventListener('click', async ()=>{
+    const text = $('captionHidden').value || $('caption').textContent;
+    if(!text || text.trim().length<3){ showToast('Belum ada caption untuk disalin'); return; }
+    try{
+      await navigator.clipboard.writeText(text);
+      showToast('Caption disalin ke clipboard ✅');
+    }catch(e){
+      showToast('Tidak bisa akses clipboard — copy manual',2500);
+    }
+  });
+
+  // refresh caption
+  $('refreshCaption').addEventListener('click', ()=>{
+    if(!lastPrompt){ showToast('Generate gambar dulu ya'); return; }
+    const tone = $('tone').value;
+    const cap = generateCaption(lastPrompt, tone);
+    $('caption').textContent = cap;
+    $('captionHidden').value = cap;
+    showToast('Caption diperbarui ✅');
+  });
+
+  // send to NPA Smart (simulasi)
+  $('sendNpa').addEventListener('click', ()=>{
+    if(!lastPrompt || !lastImageURL){ showToast('Generate gambar dulu'); return; }
+    const payload = {
+      image: lastImageURL,
+      caption: $('captionHidden').value || $('caption').textContent,
+      theme: $('themeSelect').value,
+      visual: $('visual').value,
+      ratio: $('ratio').value,
+      ts: new Date().toISOString()
+    };
+    // simulate send — show modal/payload
+    alert('Simulasi kirim ke NPA Smart:\n\n' + JSON.stringify(payload,null,2) + '\n\n(Implementasikan endpoint FonNTE di backend untuk kirim real)');
+  });
+
+  // download image + caption -> create canvas composition and download PNG
+  $('downloadAll').addEventListener('click', async ()=>{
+    if(!lastImageURL){ showToast('Generate gambar dulu'); return; }
+    showToast('Mempersiapkan download…', 2000);
+    try{
+      const ratio = $('ratio').value;
+      const s = sizeForRatio(ratio);
+      // load image blob (CORS)
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = lastImageURL + '&sig=' + Math.random().toString(36).slice(2,6);
+      img.onload = ()=>{
+        // create canvas with extra space for caption
+        const captionText = $('captionHidden').value || $('caption').textContent;
+        const padding = Math.round(s.h * 0.12);
+        const canvas = document.createElement('canvas');
+        canvas.width = s.w;
+        canvas.height = s.h + padding;
+        const ctx = canvas.getContext('2d');
+        // draw image
+        ctx.drawImage(img,0,0,s.w,s.h);
+        // gradient overlay for caption area
+        const grad = ctx.createLinearGradient(0,s.h,0,s.h+padding);
+        grad.addColorStop(0,'rgba(0,0,0,0.0)');
+        grad.addColorStop(1,'rgba(0,0,0,0.5)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0,s.h,s.w,padding);
+        // caption text
+        ctx.fillStyle = '#fff'; ctx.textAlign='left';
+        const fontSize = Math.round(padding*0.32);
+        ctx.font = `bold ${fontSize}px Poppins, sans-serif`;
+        // wrap text
+        const maxW = s.w - 40;
+        const lines = wrapText(ctx, captionText, maxW);
+        let y = s.h + 20 + fontSize/2;
+        for(let i=0;i<Math.min(lines.length,3);i++){
+          ctx.fillText(lines[i],20,y);
+          y += fontSize + 6;
+        }
+        // filename
+        const fname = 'npa-' + Date.now() + '.png';
+        canvas.toBlob(function(blob){
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = fname;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          showToast('Gambar + caption didownload ✅',2500);
+        }, 'image/png');
+      };
+      img.onerror = ()=>{
+        showToast('Gagal ambil gambar untuk di-download (CORS).',3000);
+      };
+    }catch(e){
+      console.error(e);
+      showToast('Gagal membuat file',3000);
+    }
+  });
+
+  // simple word wrap
+  function wrapText(ctx, text, maxWidth){
+    const words = text.split(' ');
+    const lines = [];
+    let line = '';
+    for(let n=0;n<words.length;n++){
+      const testLine = line + words[n] + ' ';
+      const metrics = ctx.measureText(testLine);
+      const testWidth = metrics.width;
+      if(testWidth > maxWidth && n>0){
+        lines.push(line.trim());
+        line = words[n] + ' ';
+      }else{
+        line = testLine;
+      }
+    }
+    lines.push(line.trim());
+    return lines;
   }
 
-  // open in bing image creator (copy prompt + open)
-  function openBing(){
-    const p = genPrompt.value || '';
-    copyText(p,false);
-    // Bing Image Creator uses search param 'q' for image create page (may require login)
-    const url = 'https://www.bing.com/images/create?q=' + encodeURIComponent(p);
-    window.open(url,'_blank');
-  }
-
-  // events
-  btnGen.addEventListener('click', generateImage);
-  btnRef.addEventListener('click', refreshImage);
-  btnCopyPrompt.addEventListener('click', ()=>copyText(genPrompt.value));
-  btnCopyCaption.addEventListener('click', ()=>copyText(genCaption.value));
-  btnOpenBing.addEventListener('click', openBing);
-  btnDownload.addEventListener('click', downloadImage);
-
-  // initial
-  (()=>{
-    genPrompt.value = buildPrompt(theme.value, custom.value, style.value);
-    genCaption.value = buildCaption(theme.value, genPrompt.value);
-  })();
-
-  // update when selecting Custom to auto-fill placeholder
-  theme.addEventListener('change', ()=>{
-    if (theme.value === 'Custom' || theme.value === 'Custom Prompt...') {
-      custom.placeholder = 'Tulis prompt kustom: contoh "A visionary Muslim entrepreneur on rooftop, sunset, cinematic"';
-      custom.focus();
-    } else {
-      custom.placeholder = '';
-      // update prompt/caption previews
-      genPrompt.value = buildPrompt(theme.value, custom.value, style.value);
-      genCaption.value = buildCaption(theme.value, genPrompt.value);
+  // mode toggle (just cosmetic)
+  $('toggleMode').addEventListener('click', ()=>{
+    const root = document.documentElement;
+    if(root.style.getPropertyValue('--bg')==='#071026'){
+      // switch to light-ish
+      root.style.setProperty('--bg','#f6f9ff');
+      root.style.setProperty('--card','#ffffff');
+      root.style.setProperty('--card-2','#fbfdff');
+      root.style.setProperty('--muted','#516783');
+      root.style.setProperty('--accent','#2563eb');
+      root.style.setProperty('--accent-2','#1e40af');
+      document.body.style.background = 'linear-gradient(180deg,#f6f9ff,#eef6ff)';
+      $('modeLabel').textContent='Light';
+    }else{
+      root.style.setProperty('--bg','#071026');
+      root.style.setProperty('--card','#0f1724');
+      root.style.setProperty('--card-2','#0b2236');
+      root.style.setProperty('--muted','#9fb3c8');
+      root.style.setProperty('--accent','#00f5c4');
+      root.style.setProperty('--accent-2','#28a7ff');
+      document.body.style.background = 'linear-gradient(180deg,#041026,#061528)';
+      $('modeLabel').textContent='Dark';
     }
+    showToast('Mode diganti');
   });
 
-  // update previews when custom changed
-  custom.addEventListener('input', ()=>{
-    if (theme.value === 'Custom' || theme.value === 'Custom Prompt...') {
-      genPrompt.value = buildPrompt('Custom', custom.value, style.value);
-      genCaption.value = buildCaption('Custom', genPrompt.value);
-    }
+  // small UX: when theme custom selected, focus custom input
+  $('themeSelect').addEventListener('change', (e)=>{
+    if(e.target.value==='custom'){ $('customIdea').focus(); }
   });
 
-  style.addEventListener('change', ()=> {
-    genPrompt.value = buildPrompt(theme.value, custom.value, style.value);
-    genCaption.value = buildCaption(theme.value, genPrompt.value);
-  });
+  // initial: set default ratio 4:5
+  $('ratio').value='4:5';
 
-  // when preview image loads, ensure status
-  previewImg.addEventListener('load', ()=> {
-    statusText.textContent = 'Selesai';
-  });
+  // quick test: prefill captionHidden
+  $('captionHidden').value='';
+
 })();
 </script>
 </body>
-  </html>
+          </html>
