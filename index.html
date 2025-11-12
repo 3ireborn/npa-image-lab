@@ -3,159 +3,130 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>NPA Image Lab — v2.6.1 Dummy Direct</title>
+<title>Web Generator Umroh AI — NPA Image Lab v3.0 (Dummy)</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
-  :root {
-    --bg:#071025; --card:#0f1b2a; --accent:#10b981; --muted:#9fb0c6;
-  }
-  body {
-    margin:0; font-family:Poppins,system-ui,sans-serif;
-    background:var(--bg); color:#e6f0fb;
-  }
-  .wrap{max-width:900px;margin:auto;padding:20px}
-  h1{margin:0;font-size:28px}
-  .muted{color:var(--muted);font-size:14px}
-  .card{background:rgba(255,255,255,0.04);border-radius:16px;padding:18px;margin-top:14px;box-shadow:0 8px 25px rgba(2,6,23,.5)}
-  select,input,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.05);background:rgba(255,255,255,0.05);color:#e6f0fb}
-  .btn{padding:10px 16px;border-radius:10px;font-weight:600;cursor:pointer;border:0}
-  .btn-green{background:#06d6a0;color:#04202e}
-  .btn-yellow{background:#facc15;color:#04202e}
-  .btn-blue{background:#06b6d4;color:#04202e}
-  .btn-dark{background:rgba(255,255,255,0.1);color:#fff}
-  .row{display:flex;flex-wrap:wrap;gap:10px}
-  .preview{height:400px;border-radius:12px;background:#0b192b;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-top:10px}
-  img.preview-img{width:100%;height:100%;object-fit:cover}
-  .log{font-size:13px;margin-top:6px;color:#bce3ff}
+body{font-family:Poppins,sans-serif;background:#0f172a;color:#e2e8f0;margin:0;padding:20px;}
+h1{font-size:28px;font-weight:700;background:linear-gradient(90deg,#38bdf8,#a855f7,#facc15);-webkit-background-clip:text;color:transparent;text-align:center;}
+.card{background:rgba(255,255,255,0.05);border-radius:16px;padding:18px;margin:14px auto;max-width:850px;box-shadow:0 8px 25px rgba(0,0,0,.4);}
+label{font-weight:600;font-size:14px;display:block;margin-top:10px;}
+select,input,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.07);color:#fff;}
+button{border:0;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer;}
+.btn-blue{background:#06b6d4;color:#021b2a;}
+.btn-yellow{background:#facc15;color:#021b2a;}
+.btn-green{background:#22c55e;color:#021b2a;}
+.btn-dark{background:rgba(255,255,255,0.1);color:#fff;}
+.preview{margin-top:10px;border-radius:10px;overflow:hidden;background:#1e293b;height:380px;display:flex;align-items:center;justify-content:center;}
+.preview img{width:100%;height:100%;object-fit:cover;}
+textarea{min-height:100px;}
+.log{font-size:13px;color:#93c5fd;margin-top:6px;}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>NPA Image Lab <span class="muted">v2.6.1 Dummy Mode</span></h1>
-  <p class="muted">Mode Dummy: ambil gambar langsung dari Unsplash tanpa API Key — aman dan cepat.</p>
+<h1>🕋 Web Generator Umroh AI — NPA Image Lab v3.0 (Dummy)</h1>
+<div class="card">
+  <label>🌄 Tema / Judul Utama</label>
+  <select id="judul">
+    <option>UMROH GRATIS BERSAMA ISTIKMAL SYARIAH</option>
+    <option>Raih Umroh Impian Bersama Istikmal</option>
+    <option>Promo Spesial Umroh Berkah</option>
+    <option>Umroh Bareng Keluarga, Lebih Bermakna</option>
+    <option>Custom</option>
+  </select>
+  <input id="judulCustom" placeholder="Tulis judul custom" style="display:none;margin-top:8px">
 
-  <div class="card">
-    <label>🌈 Ide Gambar</label>
-    <select id="idea">
-      <option>Bisnis Syariah Modern</option>
-      <option>Networking for Ummah</option>
-      <option>3IReborn — Perlindungan & Investasi</option>
-      <option>Warung Rumahan Hangat</option>
-      <option>Motivasi Pagi</option>
-      <option>Custom</option>
-    </select>
+  <label>🌙 Tagline</label>
+  <select id="tagline">
+    <option>Langkah Suci, Niat Murni</option>
+    <option>Bersama Istikmal Raih Panggilan Ilahi</option>
+    <option>Umroh Tak Lagi Sekadar Impian</option>
+    <option>Perjalanan Penuh Berkah</option>
+    <option>Custom</option>
+  </select>
+  <input id="taglineCustom" placeholder="Tulis tagline custom" style="display:none;margin-top:8px">
 
-    <label style="margin-top:10px">🎨 Gaya Visual</label>
-    <select id="visual">
-      <option>Clean Corporate</option>
-      <option>Warm Homely</option>
-      <option>Elegant Minimalist</option>
-      <option>Bright Lifestyle</option>
-    </select>
+  <label>📍 Lokasi / Latar Belakang</label>
+  <select id="bg">
+    <option>Ka'bah saat Matahari Terbenam</option>
+    <option>Masjid Nabawi Malam Hari</option>
+    <option>Interior Raudhah</option>
+    <option>Siluet Jemaah di Arafah</option>
+    <option>Custom</option>
+  </select>
+  <input id="bgCustom" placeholder="Jelaskan background" style="display:none;margin-top:8px">
 
-    <label style="margin-top:10px">🖼 Rasio Gambar</label>
-    <select id="ratio">
-      <option value="4:5" selected>4:5 — Feed</option>
-      <option value="1:1">1:1 — Square</option>
-      <option value="16:9">16:9 — Reel</option>
-      <option value="9:16">9:16 — Story</option>
-    </select>
+  <label>🎨 Gaya Visual</label>
+  <select id="style">
+    <option>Cinematic photo-realistic</option>
+    <option>Soft pastel illustration</option>
+    <option>Warm golden-hour</option>
+    <option>Clean modern poster</option>
+    <option>Custom</option>
+  </select>
+  <input id="styleCustom" placeholder="Deskripsikan gaya visual" style="display:none;margin-top:8px">
 
-    <label style="margin-top:10px">🔊 Gaya Caption</label>
-    <select id="tone">
-      <option>Motivasi Lembut</option>
-      <option>Inspiratif</option>
-      <option>Persuasif</option>
-      <option>Syariah & Bijak</option>
-    </select>
+  <label>🖼 Rasio Gambar</label>
+  <select id="ratio">
+    <option value="4:5">Feed 4:5</option>
+    <option value="1:1">Square 1:1</option>
+    <option value="9:16">Story 9:16</option>
+  </select>
 
-    <div class="row" style="margin-top:14px">
-      <button id="generate" class="btn btn-blue">🚀 Generate Gambar</button>
-      <button id="refresh" class="btn btn-yellow">🔁 Refresh Caption</button>
-      <button id="copy" class="btn btn-dark">📋 Copy Caption</button>
-    </div>
+  <label>📢 Call To Action</label>
+  <select id="cta">
+    <option>💫 Daftar Sekarang</option>
+    <option>🌙 Yuk, Berangkat Bersama Kami</option>
+    <option>✨ Klik untuk Info Lengkap</option>
+    <option>📞 Hubungi Sekarang</option>
+  </select>
 
-    <div class="preview" id="preview">
-      <span class="muted">Belum ada gambar...</span>
-    </div>
-
-    <h3 style="margin-top:14px">✍️ Caption</h3>
-    <div id="caption" style="white-space:pre-line;font-size:15px"></div>
-
-    <div class="row" style="margin-top:10px">
-      <button id="download" class="btn btn-dark">⬇️ Download Gambar + Caption</button>
-      <button id="send" class="btn btn-green">📡 Kirim ke NPA Smart</button>
-    </div>
-
-    <div class="log" id="log"></div>
+  <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+    <button class="btn-blue" onclick="generate()">🚀 Generate Poster</button>
+    <button class="btn-yellow" onclick="copyPrompt()">📋 Copy Prompt</button>
+    <button class="btn-dark" onclick="copyNarasi()">📢 Copy Narasi</button>
   </div>
+
+  <div class="preview" id="preview"><span class="text-gray-400">Belum ada gambar...</span></div>
+
+  <h3 style="margin-top:10px">🧠 Prompt AI</h3>
+  <textarea id="prompt" readonly></textarea>
+
+  <h3 style="margin-top:10px">🗣️ Narasi Facebook</h3>
+  <textarea id="narasi" readonly></textarea>
+
+  <div class="log" id="log"></div>
 </div>
 
 <script>
-const $ = id => document.getElementById(id);
-function log(t){$('log').textContent='['+new Date().toLocaleTimeString()+'] '+t;}
+const $=id=>document.getElementById(id);
+function showInput(sel,input){sel.onchange=()=>input.style.display=sel.value==='Custom'?'block':'none';}
+showInput($('judul'),$('judulCustom'));
+showInput($('tagline'),$('taglineCustom'));
+showInput($('bg'),$('bgCustom'));
+showInput($('style'),$('styleCustom'));
 
-const CAPT = {
-  "Motivasi Lembut":[
-    "Sruput kopi, tarik napas, dan ingat: satu langkah kecil hari ini bisa ubah hidupmu 🌤️",
-    "Jangan terburu-buru. Nikmati prosesnya, tiap usaha kecil tetap berarti 🍃"
-  ],
-  "Inspiratif":[
-    "Mulai dari niat, lanjutkan dengan aksi. Langit pun tersenyum melihat semangatmu ☀️",
-    "Kegigihanmu hari ini jadi kebanggaan di masa depan 💪"
-  ],
-  "Persuasif":[
-    "Yuk bergabung bersama kami — langkah kecilmu bisa jadi awal perubahan besar 🚀",
-    "Klik komentar di bawah dan mulai perjalanan suksesmu hari ini ✨"
-  ],
-  "Syariah & Bijak":[
-    "Rezeki tak tertukar. Yang penting niat baik dan usaha sungguh-sungguh 🤲",
-    "Kerja keras dengan nilai halal, hasilnya berkah dan menenangkan hati 🌙"
-  ]
-};
+function generate(){
+  const judul=$('judul').value==='Custom'?$('judulCustom').value:$('judul').value;
+  const tagline=$('tagline').value==='Custom'?$('taglineCustom').value:$('tagline').value;
+  const bg=$('bg').value==='Custom'?$('bgCustom').value:$('bg').value;
+  const style=$('style').value==='Custom'?$('styleCustom').value:$('style').value;
+  const ratio=$('ratio').value;
+  const cta=$('cta').value;
 
-let lastImg = '';
+  const query=encodeURIComponent(`umroh poster ${bg} ${style}`);
+  const size=ratio==='9:16'?'720x1280':ratio==='1:1'?'900x900':'800x1000';
+  $('preview').innerHTML=`<img src="https://source.unsplash.com/${size}/?${query}" alt="preview">`;
 
-$('generate').onclick = ()=>{
-  const idea = $('idea').value;
-  const vis = $('visual').value;
-  const ratio = $('ratio').value;
-  const query = encodeURIComponent(idea+' '+vis+' poster');
-  let size='800x1000';
-  if(ratio==='1:1') size='900x900';
-  if(ratio==='16:9') size='1280x720';
-  if(ratio==='9:16') size='720x1280';
-  const url=`https://source.unsplash.com/${size}/?${query}`;
-  lastImg=url;
-  $('preview').innerHTML=`<img src="${url}" class="preview-img" alt="preview">`;
-  buildCaption();
-  log('Gambar ditampilkan (Dummy Unsplash) ✅');
-};
+  const prompt=`Create an Umroh advertising poster for "Istikmal Syariah" with main title "${judul}", tagline "${tagline}", and call-to-action "${cta}". Background: ${bg}. Style: ${style}. Ratio ${ratio}. Lighting warm golden hour.`;
+  const narasi=`🕋✨ ${judul}\n\n${tagline}\n\nBersama Istikmal Syariah, perjalanan spiritual Anda lebih aman, nyaman, dan penuh berkah. Segera ${cta.toLowerCase()} untuk promo spesial hari ini!\n\n#UmrohBerkah #IstikmalSyariah #NPAImageLab`;
 
-$('refresh').onclick = ()=>buildCaption(true);
-$('copy').onclick = ()=>{navigator.clipboard.writeText($('caption').textContent);log('Caption disalin ✅');};
-$('download').onclick = ()=>{
-  if(!lastImg){alert('Belum ada gambar');return;}
-  const a=document.createElement('a');
-  a.href=lastImg;a.download='npa-image.jpg';a.click();
-  const blob=new Blob([$('caption').textContent],{type:'text/plain'});
-  const url=URL.createObjectURL(blob);
-  const b=document.createElement('a');b.href=url;b.download='caption.txt';b.click();URL.revokeObjectURL(url);
-  log('Gambar+caption diunduh ✅');
-};
-$('send').onclick=()=>{alert('Simulasi kirim ke NPA Smart (Dummy).');log('Kirim dummy sukses ✅');};
-
-function buildCaption(){
-  const tone=$('tone').value;
-  const capts=CAPT[tone];
-  const c=capts[Math.floor(Math.random()*capts.length)];
-  const idea=$('idea').value;
-  $('caption').textContent=`${c}\n\n#${idea.replace(/\s+/g,'_')}`;
-  log('Caption diupdate ✅');
+  $('prompt').value=prompt;
+  $('narasi').value=narasi;
+  $('log').textContent='Poster dummy berhasil dibuat ✅';
 }
-
-buildCaption();
-log('Sistem siap v2.6.1 🚀');
+function copyPrompt(){navigator.clipboard.writeText($('prompt').value);$('log').textContent='Prompt disalin ✅';}
+function copyNarasi(){navigator.clipboard.writeText($('narasi').value);$('log').textContent='Narasi disalin ✅';}
 </script>
 </body>
 </html>
